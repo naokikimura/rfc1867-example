@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<%@page contentType="text/html" pageEncoding="UTF-8" import="java.util.*, org.apache.commons.fileupload.*, org.apache.commons.fileupload.servlet.*, org.apache.commons.fileupload.disk.DiskFileItemFactory, org.apache.commons.io.IOUtils" %>
+<%@page contentType="text/html" pageEncoding="UTF-8" import="java.util.*, org.apache.commons.io.IOUtils" %>
 <html lang="en-US">
 <head>
     <meta charset="UTF-8">
