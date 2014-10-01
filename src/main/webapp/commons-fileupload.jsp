@@ -30,7 +30,7 @@ if (isMultipartContent) {
         }
     }
 } else {
-    if (!"GET".equalsIgnoreCase(request.getMethod())) response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+    if (!"GET".equalsIgnoreCase(request.getMethod())) response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Content-Type != multipart/form-data");
 
     for (String field : fields) pageContext.setAttribute(field, request.getParameter(field));
 }
