@@ -8,9 +8,9 @@
 <body>
     <h2>Hello World!</h2>
 <%
-String method = request.getMethod();
-String contentType = request.getContentType();
-boolean isMultipartContent = "POST".equalsIgnoreCase(method) && contentType != null && contentType.toLowerCase(Locale.ENGLISH).startsWith("multipart/");
+List<String> fields = Arrays.asList("title", "message");
+
+boolean isMultipartContent = ServletFileUpload.isMultipartContent(request);
 request.setAttribute("org.apache.commons.fileupload.servlet.ServletFileUpload.isMultipartContent", isMultipartContent);
 
 if (isMultipartContent) {
@@ -19,31 +19,28 @@ if (isMultipartContent) {
     ServletFileUpload upload = new ServletFileUpload(factory);
     Map<String, List<FileItem>> parameterMap = upload.parseParameterMap(request);
     request.setAttribute("org.apache.commons.fileupload.servlet.ServletFileUpload.parseParameterMap", parameterMap);
-}
 
-List<String> fields = Arrays.asList("title", "message");
-if ((boolean) request.getAttribute("org.apache.commons.fileupload.servlet.ServletFileUpload.isMultipartContent")) {
-        Map<String, List<FileItem>> parameterMap = (Map<String, List<FileItem>>) request.getAttribute("org.apache.commons.fileupload.servlet.ServletFileUpload.parseParameterMap");
-        for (String field : fields) {
-            if (!parameterMap.containsKey(field)) continue;
+    Map<String, List<FileItem>> parameters = (Map<String, List<FileItem>>) request.getAttribute("org.apache.commons.fileupload.servlet.ServletFileUpload.parseParameterMap");
+    for (String field : fields) {
+        if (!parameters.containsKey(field)) continue;
 
-            for (FileItem item : parameterMap.get(field)) {
-                if (item.isFormField()) {
-                    pageContext.setAttribute(item.getFieldName(), item.getString());
-                } else {
-                    try (java.io.InputStream is = item.getInputStream();) {
-                        pageContext.setAttribute(item.getFieldName(), IOUtils.toString(is, "UTF-8"));
-                    }
+        for (FileItem item : parameters.get(field)) {
+            if (item.isFormField()) {
+                pageContext.setAttribute(item.getFieldName(), item.getString());
+            } else {
+                try (java.io.InputStream is = item.getInputStream();) {
+                    pageContext.setAttribute(item.getFieldName(), IOUtils.toString(is, "UTF-8"));
                 }
             }
         }
+    }
 } else {
     for (String field : fields) pageContext.setAttribute(field, request.getParameter(field));
 }
 %>
     <dl>
         <dt>isMultipartContent</dt>
-        <dd><code>${isMultipartContent}</code></dd>
+        <dd><code>${requestScope['org.apache.commons.fileupload.servlet.ServletFileUpload.isMultipartContent']}</code></dd>
         <dt>title</dt>
         <dd><pre><code>${title}</code></pre></dd>
         <dt>message</dt>
@@ -54,7 +51,7 @@ if ((boolean) request.getAttribute("org.apache.commons.fileupload.servlet.Servle
         <input type="text" name="title" id="title" />
         <label for="message">Message</label>
         <input type="file" name="message" id="message" />
-        <button type="submit">Send</button>
+        <input type="submit" />
     </form>
 </body>
 </html>
